@@ -1,7 +1,15 @@
 * {
     box-sizing: border-box;
 }
-
+.skip-to-content-link {
+    background: #e77e23;
+    height: 30px;
+    left: 50%;
+    padding: 8px;
+    position: absolute;
+    transform: translateY(-100%);
+    transition: transform 0.3s;
+}
 body {
     font-size: 10px;
     font-family: Tahoma, Arial;
@@ -47,10 +55,27 @@ nav {
     padding-top: 40px;
 }
 
+.header {
+    height: 50px;
+    background-color: #b4c6f0;
+    background-size: 400px;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    padding-top: 40px;
+    text-align: center;
+}
+
+.header h2 {
+    font-size: 4.2em;
+    color: #4d5791;
+}
+
 .hero h1,
 .hero h2 {
     text-align: center;
     margin: 0;
+    color: #4d5791;
+    
 }
 
 .hero h1 {
@@ -73,7 +98,7 @@ nav {
     display: inline-block;
 }
 
-.bottom {
+footer {
     height: 50px;
     background-color: #b4c6f0;
     padding: 40px;
