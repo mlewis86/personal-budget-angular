@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
     <!--This is an A11y Change-->
     <a class="skip-to-content-link" href="#main">
@@ -56,30 +55,30 @@
                     app will help you with that!
                 </p>
             </article>
-    
+
             <div class="text-box">
                 <h1>Alerts</h1>
                 <p>
                     What if your clothing budget ended? You will get an alert. The goal is to never go over the budget.
                 </p>
             </div>
-    
+
             <div class="text-box">
                 <h1>Results</h1>
                 <p>
                     People who stick to a financial plan, budgeting every expense, get out of debt faster!
-                    Also, they to live happier lives... since they expend without guilt or fear... 
+                    Also, they to live happier lives... since they expend without guilt or fear...
                     because they know it is all good and accounted for.
                 </p>
             </div>
-    
+
             <div class="text-box">
                 <h1>Free</h1>
                 <p>
                     This app is free!!! And you are the only one holding your data!
                 </p>
             </div>
-    
+
             <div class="text-box">
                 <h1>Stay on track</h1>
                 <p>
@@ -88,25 +87,15 @@
                     app will help you with that!
                 </p>
             </div>
-    
+
             <div class="text-box">
-                <h1>Alerts</h1>
-                <p>
-                    What if your clothing budget ended? You will get an alert. The goal is to never go over the budget.
-                </p>
+                <h1>D3 Budget Chart</h1>
+                <svg id="d3chart" width="400" height="400"></svg>
+
             </div>
-    
+
             <div class="text-box">
-                <h1>Results</h1>
-                <p>
-                    People who stick to a financial plan, budgeting every expense, get out of debt faster!
-                    Also, they to live happier lives... since they expend without guilt or fear... 
-                    because they know it is all good and accounted for.
-                </p>
-            </div>
-    
-            <div class="text-box">
-                <h1>Free</h1>
+                <h1>Chartjs Budget Chart</h1>
                 <p>
                     <canvas id="myChart" width="400" height="400"></canvas>
                 </p>
@@ -121,32 +110,33 @@
             All rights reserved &copy; Fabio Nolasco
         </div>
     </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js" integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
-   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"
+        integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
         var dataSource = {
-                datasets: [
-                    {
-                        data: [30, 350, 90],
-                        backgroundColor: [
-                            '#ffcd56',
-                            '#ff6384',
-                            '#36a2eb',
-                            '#fd6b19',
-                            '#74382b',
-                            '#7f1a93',
-                            '#1a9346'
-                        ]
-                    }
-                ],
-                labels: [
-                    'Eat out',
-                    'Rent',
-                    'Groceries'
-                ]
-            };
+            datasets: [
+                {
+                    data: [30, 350, 90],
+                    backgroundColor: [
+                        '#ffcd56',
+                        '#ff6384',
+                        '#36a2eb',
+                        '#fd6b19',
+                        '#74382b',
+                        '#7f1a93',
+                        '#1a9346'
+                    ]
+                }
+            ],
+            labels: [
+                'Eat out',
+                'Rent',
+                'Groceries'
+            ]
+        };
 
         function createChart() {
             var ctx = document.getElementById("myChart").getContext("2d");
@@ -158,16 +148,79 @@
 
         function getBudget() {
             axios.get('/budget')
-            .then(function (res) {
-                console.log(res.data);
-                for (var i = 0; i < res.data.myBudget.length; i++) {
-                    dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
-                    dataSource.labels[i] = res.data.myBudget[i].title;
-                }
-                createChart();
-            });
+                .then(function (res) {
+                    console.log(res.data);
+                    for (var i = 0; i < res.data.myBudget.length; i++) {
+                        dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
+                        dataSource.labels[i] = res.data.myBudget[i].title;
+                    }
+                    createChart();
+                });
         }
         getBudget()
     </script>
+    <script>
+        function getBudget() {
+            return axios.get("/budget")
+                .then(function (res) {
+                    console.log(res.data);
+                    return res.data;
+                });
+        }
+
+        async function createD3Chart() {
+            var data = await getBudget();
+            var width = 400;
+            height = 400;
+            radius = Math.min(width, height) / 2;
+
+
+            var color = d3.scaleOrdinal()
+                .domain([0-10])
+	            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+            var pie = d3.pie()
+                .sort(null)
+	            .value(function(d) {
+		                return d.budget;
+	            });
+
+            var arc = d3.arc()
+	            .outerRadius(radius * 0.8)
+	            .innerRadius(radius * 0.4);
+
+            var outerArc = d3.arc()
+	            .innerRadius(radius * 0.9)
+	            .outerRadius(radius * 0.9);
+
+            var svg = d3.select("#d3chart")
+                .append("svg")
+                .append("g")
+                .attr("width", width)
+                .attr("height", height)               
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            var arcs = svg.selectAll("arc")
+                .data(pie(data.myBudget))
+                .enter()
+                .append("g")
+                .attr("class", "arc");
+
+            arcs.append("path")
+                .attr("d", arc)
+                .attr("fill", function (d) { return color(d.data.title); });
+
+            arcs.append("text")
+                .attr("transform", function (d) {
+                    return "translate(" + arc.centroid(d) + ")";
+                })
+                .text(function (d) { return d.data.title; })
+                .style("text-anchor", "middle")
+                .style("font-size", "10px");
+        }
+
+        createD3Chart();
+    </script>
+
 </body>
 </html>
