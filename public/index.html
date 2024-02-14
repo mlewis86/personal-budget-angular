@@ -147,7 +147,7 @@
         }
 
         function getBudget() {
-            axios.get('/budget')
+            axios.get('http://localhost:3000/budget')
                 .then(function (res) {
                     console.log(res.data);
                     for (var i = 0; i < res.data.myBudget.length; i++) {
@@ -161,7 +161,7 @@
     </script>
     <script>
         function getBudget() {
-            return axios.get("/budget")
+            return axios.get('http://localhost:3000/budget')
                 .then(function (res) {
                     console.log(res.data);
                     return res.data;
